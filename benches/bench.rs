@@ -12,3 +12,5 @@ fn bench_add(b: &mut test::Bencher) {
         storage.add(black_box(1));
     });
 }
+
+//YASIR
