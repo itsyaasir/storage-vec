@@ -33,17 +33,21 @@ impl<T> Storage<T> {
         self.len
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
     pub fn get(&self, pos: usize) -> Option<&T> {
         if pos >= self.len {
             return None;
         }
 
-        let ptr = unsafe { self.byte_ptr.offset(pos as isize) };
+        let ptr = unsafe { self.byte_ptr.add(pos) };
         Some(unsafe { &*ptr })
     }
 
     pub fn add(&mut self, value: T) {
-        unsafe { std::ptr::write(self.byte_ptr.offset(self.len as isize), value) };
+        unsafe { std::ptr::write(self.byte_ptr.add(self.len), value) };
         self.len += 1;
 
         if self.len > self.cap {
@@ -59,7 +63,7 @@ impl<T> Storage<T> {
         let pos = self.len - 1;
         self.len -= 1;
 
-        let inst = unsafe { self.byte_ptr.offset(pos as isize).read() };
+        let inst = unsafe { self.byte_ptr.add(pos).read() };
         Some(inst)
     }
 
@@ -96,6 +100,6 @@ impl<'a, T> Iterator for Iter<'a, T> {
         let ret = self.inner.get(self.offset)?;
         self.offset += 1;
 
-        Some(&ret)
+        Some(ret)
     }
 }
